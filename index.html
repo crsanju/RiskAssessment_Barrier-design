@@ -569,109 +569,70 @@
         }
 
         /* --- Login Overlay --- */
+        body.app-locked {
+          overflow: hidden;
+        }
         #loginContainer {
           display: flex;
-          align-items: stretch;
+          align-items: center;
           justify-content: center;
           min-height: 100vh;
-          background: #f1f5f9;
-          background: radial-gradient(circle at center, #f8fafc 0%, #e2e8f0 100%);
           position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
+          inset: 0;
           z-index: 9999;
-          padding: 32px;
+          padding: 24px;
+          background: rgba(15, 23, 42, 0.5);
+          backdrop-filter: blur(4px);
           box-sizing: border-box;
-          animation: fadeIn 0.5s ease-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
         }
         .login-shell {
-          display: grid;
-          grid-template-columns: minmax(0, 1fr) 420px;
-          gap: 32px;
-          align-items: center;
-          width: min(1200px, 100%);
-          margin: auto;
-          animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        @keyframes slideUp {
-            from { transform: translateY(30px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        .login-info {
-          background: rgba(255,255,255,0.75);
-          border: 1px solid rgba(255,255,255,0.9);
-          border-radius: 18px;
-          padding: 28px;
-          box-shadow: 0 10px 30px rgba(15,23,42,0.08);
-          backdrop-filter: blur(2px);
-          transition: all 0.3s ease;
-        }
-        .login-info:hover {
-          box-shadow: 0 20px 40px rgba(15,23,42,0.12);
-          transform: translateY(-2px);
-        }
-        .login-info h1 {
-          margin: 0 0 12px 0;
-          font-size: 1.8rem;
-          color: #0f172a;
-        }
-        .login-info p { margin: 0 0 12px 0; font-size: 1rem; color: #334155; }
-        .login-info .pill-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
-        .login-info .pill { 
-            background: #0ea5e9; 
-            color: #fff; 
-            padding: 8px 12px; 
-            border-radius: 999px; 
-            font-weight: 700; 
-            font-size: 0.9rem; 
-            box-shadow: var(--shadow-sm);
-            transition: all 0.3s ease;
-        }
-        .login-info .pill:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-        .login-info ul { margin: 12px 0 0 18px; color:#334155; }
-        .login-info li { margin-bottom:8px; }
-
-        .login-box {
-          background: white;
-          padding: 40px;
-          border-radius: var(--radius-lg);
+          width: min(430px, 95vw);
+          background: #ffffff;
+          border: 1px solid var(--border-color);
+          border-radius: 16px;
           box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-          width: 100%;
-          max-width: 440px;
-          text-align: center;
+          padding: 24px;
+        }
+        .login-logo {
+          width: min(230px, 62vw);
+          display: block;
+          margin: 0 auto 14px;
+          object-fit: contain;
         }
         .login-title {
-          font-size: 2rem;
+          font-size: 1.35rem;
           font-weight: 800;
           color: #0f172a;
-          margin-bottom: 30px;
-          letter-spacing: -0.025em;
+          margin: 0 0 8px;
+          text-align: center;
+          letter-spacing: -0.02em;
         }
-        .login-btn-group { display: flex; flex-direction: column; gap: 16px; }
+        .login-note {
+          margin: 0 0 14px;
+          text-align: center;
+          color: #475569;
+          font-size: 0.95rem;
+        }
         .login-input {
           width: 100%;
-          padding: 14px;
+          padding: 12px;
           border: 1px solid #cbd5e1;
           border-radius: var(--radius-sm);
-          font-size: 1.1rem;
-          margin-bottom: 20px;
-          transition: all 0.3s ease;
-          background: #f8fafc;
+          font-size: 0.98rem;
+          margin-bottom: 10px;
+          transition: all 0.2s ease;
+          background: #ffffff;
         }
         .login-input:focus {
           outline: none;
           border-color: #2563eb;
-          box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
-          background: white;
-          transform: translateY(-1px);
+          box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
+        }
+        .login-error {
+          margin-top: 10px;
+          color: #b91c1c;
+          font-size: 0.88rem;
+          min-height: 1.2em;
         }
 
         /* --- Misc / Utilities --- */
@@ -932,15 +893,13 @@
             .calc-container { grid-template-columns: 1fr; }
             .header { flex-direction: column; }
             .header h1 { font-size: 1.5rem; }
-          .login-shell { grid-template-columns: 1fr; }
-          .login-info { order: 2; }
-          .login-box { padding: 30px; max-width: 100%; }
+          .login-shell { padding: 20px; }
             .sig-row { grid-template-columns: 1fr; gap: 20px; }
         }
     </style>
     <script>
-      const ADMIN_PASSWORD = 'Admin123';
-      const PLANNER_PASSWORD = 'Crompton4551';
+      const AUTH_SESSION_KEY = 'crompton_risk_auth';
+      const AUTH_ROLE_KEY = 'crompton_risk_auth_role';
       let currentUserRole = '';
 
       const STAGE_IDS = ['stage1', 'stage2', 'stage3', 'stage4', 'stage5', 'stage7'];
@@ -1134,235 +1093,127 @@
         });
       }
         
-        function loginAs(role) {
-            const app = document.getElementById('mainApp');
-            const login = document.getElementById('loginContainer');
-            const body = document.body;
+      function loginAs(role) {
+        const app = document.getElementById('mainApp');
+        const login = document.getElementById('loginContainer');
+        const body = document.body;
         currentUserRole = role;
-            
-            // Clear all role classes
-        body.classList.remove('is-admin', 'is-external', 'is-planner');
-            
-            if (role === 'external') {
-                body.classList.add('is-external');
-            } else if (role === 'admin') {
-                body.classList.add('is-admin');
-        } else if (role === 'planner') {
-          body.classList.add('is-planner');
-            }
-            
-            login.style.display = 'none';
-            app.style.display = 'block';
-        hideLegacyNavigation();
-            
-            // Show logout button for all logged-in users
-            const logoutBtn = document.getElementById('logoutBtn');
-            if (logoutBtn) {
-                logoutBtn.style.display = 'inline-flex';
-            }
-
-            updateRoleModeBanner();
-
-        if (role === 'external') {
-          showOnlyStage('stage2');
+        body.classList.remove('app-locked', 'is-admin', 'is-external', 'is-planner');
+        if (role === 'admin') {
+          body.classList.add('is-admin');
         } else {
-          showOnlyStage('stage1');
+          body.classList.add('is-planner');
         }
-        }
-    
-      function showPlannerLogin() {
-            document.querySelector('.login-btn-group').style.display = 'none';
-        document.getElementById('plannerForm').style.display = 'block';
-        document.getElementById('plannerPass').focus();
-        }
-        
-        function showAdminLogin() {
-            document.querySelector('.login-btn-group').style.display = 'none';
-            document.getElementById('adminForm').style.display = 'block';
-            document.getElementById('adminPass').focus();
-        }
-    
-      function hidePlannerLogin() {
-        document.getElementById('plannerForm').style.display = 'none';
-            document.querySelector('.login-btn-group').style.display = 'flex';
-        document.getElementById('plannerLoginError').style.display = 'none';
-        document.getElementById('plannerPass').value = '';
-        }
-        
-        function hideAdminLogin() {
-            document.getElementById('adminForm').style.display = 'none';
-            document.querySelector('.login-btn-group').style.display = 'flex';
-            document.getElementById('loginError').style.display = 'none';
-            document.getElementById('adminPass').value = '';
-            document.getElementById('adminPass').blur();
-        }
-    
-        function checkPlanner() {
-          const p = document.getElementById('plannerPass').value;
-          const rememberMe = document.getElementById('plannerRememberMeCheckbox').checked;
 
-          if (p === PLANNER_PASSWORD) {
-            if (rememberMe) {
-              localStorage.setItem('plannerRemembered', 'true');
-            }
-            loginAs('planner');
-            } else {
-            document.getElementById('plannerLoginError').style.display = 'block';
-            }
-        }
-        
-        function checkAdmin() {
-            const p = document.getElementById('adminPass').value;
-            const rememberMe = document.getElementById('rememberMeCheckbox').checked;
-            if (p === ADMIN_PASSWORD) {
-                if (rememberMe) {
-                    localStorage.setItem('adminRemembered', 'true');
-                }
-                loginAs('admin');
-            } else {
-                document.getElementById('loginError').style.display = 'block';
-            }
-        }
-        
-        function logoutAdmin() {
-            localStorage.removeItem('adminRemembered');
-          localStorage.removeItem('plannerRemembered');
-          currentUserRole = '';
-          document.body.classList.remove('is-admin', 'is-planner', 'is-external');
-            document.getElementById('mainApp').style.display = 'none';
-            document.getElementById('loginContainer').style.display = 'flex';
-            document.getElementById('adminForm').style.display = 'none';
-          document.getElementById('plannerForm').style.display = 'none';
-            document.querySelector('.login-btn-group').style.display = 'flex';
-          showOnlyStage('stage1');
-            
-            // Hide logout button
-            const logoutBtn = document.getElementById('logoutBtn');
-            if (logoutBtn) {
-                logoutBtn.style.display = 'none';
-            }
+        if (login) login.style.display = 'none';
+        if (app) app.style.display = 'block';
 
-            updateRoleModeBanner();
-        }
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            // Auto-hide the "Made by" badge after 10 seconds
-            setTimeout(function() {
-                const badge = document.querySelector('.made-by-badge');
-                if (badge) {
-                    badge.classList.add('hidden');
-                }
-            }, 10000);
-            
-            // Check if admin was remembered
-            if (localStorage.getItem('adminRemembered') === 'true') {
-                loginAs('admin');
-            } 
-            // Check if planner was remembered
-            else if (localStorage.getItem('plannerRemembered') === 'true') {
-              loginAs('planner');
-            }
-            
-            // Add keypress handlers
-            const passInput = document.getElementById('adminPass');
-            if(passInput) {
-                passInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') checkAdmin();
-                });
-            }
-            
-            const plannerPassInput = document.getElementById('plannerPass');
-            if(plannerPassInput) {
-              plannerPassInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') checkPlanner();
-                });
-            }
-            
-            // Hidden admin login trigger (triple-click on login title area)
-            const adminTrigger = document.getElementById('adminTrigger');
-            if(adminTrigger) {
-                let clickCount = 0;
-                let clickTimer = null;
-                adminTrigger.addEventListener('click', function() {
-                    clickCount++;
-                    if (clickCount === 1) {
-                        clickTimer = setTimeout(function() {
-                            clickCount = 0;
-                        }, 800);
-                    } else if (clickCount === 3) {
-                        clearTimeout(clickTimer);
-                        clickCount = 0;
-                        showAdminLogin();
-                    }
-                });
-            }
-            
-            // Keyboard shortcut for admin login: Ctrl+Shift+A
-            document.addEventListener('keydown', function(e) {
-                if (e.ctrlKey && e.shiftKey && e.key === 'A') {
-                    e.preventDefault();
-                    const loginContainer = document.getElementById('loginContainer');
-                    if (loginContainer && loginContainer.style.display !== 'none') {
-                        showAdminLogin();
-                    }
-                }
-            });
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) logoutBtn.style.display = 'inline-flex';
 
-                hideLegacyNavigation();
-                updatePageNav();
+        hideLegacyNavigation();
+        updateRoleModeBanner();
+        showOnlyStage('stage1');
+      }
+
+      function setupLoginGate() {
+        const loginForm = document.getElementById('loginForm');
+        const loginUser = document.getElementById('loginUser');
+        const loginPassword = document.getElementById('loginPassword');
+        const loginError = document.getElementById('loginError');
+
+        if (!loginForm || !loginUser || !loginPassword || !loginError) return;
+
+        const allowedUsers = {
+          admin: 'Packer4551',
+          users: 'Crompton123'
+        };
+
+        const savedAuth = sessionStorage.getItem(AUTH_SESSION_KEY) === 'true';
+        const savedRole = sessionStorage.getItem(AUTH_ROLE_KEY);
+        if (savedAuth && (savedRole === 'admin' || savedRole === 'users')) {
+          loginAs(savedRole);
+          return;
+        }
+
+        document.body.classList.add('app-locked');
+        loginUser.focus();
+
+        loginForm.addEventListener('submit', function (event) {
+          event.preventDefault();
+          const usernameKey = String(loginUser.value || '').trim().toLowerCase();
+          const enteredPassword = String(loginPassword.value || '').trim();
+          const expectedPassword = allowedUsers[usernameKey];
+
+          if (expectedPassword && enteredPassword === expectedPassword) {
+            sessionStorage.setItem(AUTH_SESSION_KEY, 'true');
+            sessionStorage.setItem(AUTH_ROLE_KEY, usernameKey);
+            loginError.textContent = '';
+            loginAs(usernameKey);
+            return;
+          }
+
+          loginError.textContent = 'Invalid username or password.';
+          loginPassword.value = '';
+          loginPassword.focus();
         });
+      }
+
+      function logoutAdmin() {
+        sessionStorage.removeItem(AUTH_SESSION_KEY);
+        sessionStorage.removeItem(AUTH_ROLE_KEY);
+        currentUserRole = '';
+        document.body.classList.remove('is-admin', 'is-planner', 'is-external');
+        document.body.classList.add('app-locked');
+
+        const app = document.getElementById('mainApp');
+        const login = document.getElementById('loginContainer');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const loginError = document.getElementById('loginError');
+        const loginPassword = document.getElementById('loginPassword');
+
+        if (app) app.style.display = 'none';
+        if (login) login.style.display = 'flex';
+        if (logoutBtn) logoutBtn.style.display = 'none';
+        if (loginError) loginError.textContent = '';
+        if (loginPassword) loginPassword.value = '';
+
+        updateRoleModeBanner();
+        showOnlyStage('stage1');
+      }
+
+      document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+          const badge = document.querySelector('.made-by-badge');
+          if (badge) {
+            badge.classList.add('hidden');
+          }
+        }, 10000);
+
+        setupLoginGate();
+        hideLegacyNavigation();
+        updatePageNav();
+      });
     </script>
 </head>
-<body id="bd">
+<body id="bd" class="app-locked">
 
 <!-- LOGIN OVERLAY -->
 <div id="loginContainer">
   <div class="login-shell">
-    <div class="login-info">
-      <h1>Temporary Barrier Analysis</h1>
-      <p>Review barrier performance, compare systems, and calculate site-specific deflection with transparent assumptions.</p>
-      <div class="pill-row">
-        <span class="pill">Compare MASH TL2–TL5</span>
-        <span class="pill">Tech sheets linked</span>
-        <span class="pill">Width/deflection matrices</span>
-      </div>
-      <ul>
-        <li>Filter by speed, available width, material, category, and special features.</li>
-        <li>See deflection/working-width calculations and printable reports with signatures.</li>
-        <li>Access terminal/end-treatment data alongside barriers for complete layouts.</li>
-      </ul>
-    </div>
+    <img class="login-logo" src="./logo.jpeg" alt="Crompton logo">
+    <h2 class="login-title">Crompton Login</h2>
+    <p class="login-note">Please sign in to access the Risk Assessment and Barrier Design tool.</p>
+    <form id="loginForm">
+      <label for="loginUser">Username</label>
+      <input id="loginUser" class="login-input" type="text" placeholder="Enter username" autocomplete="username" required>
 
-    <div class="login-box">
-        <div class="login-title" id="adminTrigger" style="cursor:pointer; user-select:none; min-height:40px; margin-bottom:10px; border-radius:8px; transition: background 0.2s;" onmouseover="this.style.background='rgba(37, 99, 235, 0.03)'" onmouseout="this.style.background='transparent'"></div>
-        <div class="login-btn-group">
-        <button class="btn btn-outline" style="width:100%" onclick="showAdminLogin()">Admin</button>
-        <button class="btn btn-outline" style="width:100%" onclick="showPlannerLogin()">Planners</button>
-            <button class="btn" style="width:100%" onclick="loginAs('external')">External User</button>
-        </div>
-        
-      <div id="plannerForm" style="display:none; margin-top:20px; border-top:1px solid #e2e8f0; padding-top:20px;">
-        <input type="password" id="plannerPass" class="login-input" placeholder="Enter Planner Password" autocomplete="current-password">
-            <div style="display:flex; align-items:center; margin:15px 0; gap:8px;">
-          <input type="checkbox" id="plannerRememberMeCheckbox" style="width:18px; height:18px; cursor:pointer;">
-          <label for="plannerRememberMeCheckbox" style="cursor:pointer; color:#475569; font-size:0.95rem; margin:0;">Remember me on this computer</label>
-            </div>
-        <div id="plannerLoginError" class="login-error" style="display:none;">Incorrect planner password</div>
-        <button class="btn" style="width:100%" onclick="checkPlanner()">Login as Planner</button>
-        <button class="btn btn-link" style="margin-top:10px;" onclick="hidePlannerLogin()">Cancel</button>
-        </div>
-        
-        <div id="adminForm" style="display:none; margin-top:20px; border-top:1px solid #e2e8f0; padding-top:20px;">
-            <input type="password" id="adminPass" class="login-input" placeholder="Enter Admin Password">
-            <div style="display:flex; align-items:center; margin:15px 0; gap:8px;">
-                <input type="checkbox" id="rememberMeCheckbox" style="width:18px; height:18px; cursor:pointer;">
-                <label for="rememberMeCheckbox" style="cursor:pointer; color:#475569; font-size:0.95rem; margin:0;">Remember me on this computer</label>
-            </div>
-            <div id="loginError" class="login-error">Incorrect Password</div>
-            <button class="btn" style="width:100%" onclick="checkAdmin()">Login as Admin</button>
-            <button class="btn btn-link" style="margin-top:10px;" onclick="hideAdminLogin()">Cancel</button>
-        </div>
-    </div>
+      <label for="loginPassword" style="margin-top:8px; display:block;">Password</label>
+      <input id="loginPassword" class="login-input" type="password" placeholder="Enter password" autocomplete="current-password" required>
+
+      <button class="btn" style="width:100%; margin-top:6px;" type="submit">Login</button>
+      <div id="loginError" class="login-error" aria-live="polite"></div>
+    </form>
   </div>
 </div>
 
