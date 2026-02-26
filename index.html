@@ -596,17 +596,8 @@
         .login-logo {
           width: min(230px, 62vw);
           display: block;
-          margin: 0 auto;
-          object-fit: contain;
-        }
-        .login-logo-wrap {
           margin: 0 auto 14px;
-          padding: 10px 14px;
-          border-radius: 12px;
-          background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-          border: 1px solid #475569;
-          width: fit-content;
-          box-shadow: 0 8px 20px rgba(15, 23, 42, 0.24);
+          object-fit: contain;
         }
         .login-title {
           font-size: 1.35rem;
@@ -1210,9 +1201,7 @@
 <!-- LOGIN OVERLAY -->
 <div id="loginContainer">
   <div class="login-shell">
-    <div class="login-logo-wrap">
-      <img class="login-logo" src="./Crompton-white-tagline.png" onerror="this.onerror=null;this.src='./logo.jpeg';" alt="Crompton logo">
-    </div>
+    <img class="login-logo" src="./logo.jpeg" onerror="this.onerror=null;this.src='./Crompton-white-tagline.png';" alt="Crompton logo">
     <h2 class="login-title">Crompton Login</h2>
     <p class="login-note">Please sign in to access the Risk Assessment and Barrier Design tool.</p>
     <form id="loginForm">
